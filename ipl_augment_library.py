@@ -236,19 +236,19 @@ def gen_sample(library, options, source_parameters, sample, idx=0, flip=False, p
                     m.xfmconcat([lib_sample[-1], ran_xfm], out_xfm)
                                 
                 if mask is not None:
-                    m.resample_labels(mask, out_mask, 
-                                    transform=out_xfm, like=model)
+                    m.resample_labels(mask, out_mask,
+                                    transform=out_xfm, like=model, invert_transform=True, baa=True, order=options.order)
                 else:
                     out_mask=None
-                    
-                m.resample_labels(filtered_dataset.seg, out_seg, 
-                                transform=out_xfm, order=options.label_order, remap=lut, like=model, baa=True)
+                #TODO  use baa and higher order if needed
+                m.resample_labels(filtered_dataset.seg, out_seg,
+                                transform=out_xfm, order=options.order, remap=lut, like=model, baa=True, invert_transform=True)
 
                 output_scan=m.tmp('scan_{}.mnc'.format(r))
                     
                 # create a file in temp dir first
                 m.resample_smooth(filtered_dataset.scan, output_scan, 
-                                order=options.order, transform=out_xfm,like=model)
+                                order=options.order, transform=out_xfm, like=model, invert_transform=True)
 
                 if post_filters is not None:
                     output_scan2=m.tmp('scan2_{}.mnc'.format(r))
