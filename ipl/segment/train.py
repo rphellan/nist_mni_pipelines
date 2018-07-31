@@ -222,7 +222,7 @@ def generate_library(parameters, output, debug=False, cleanup=False, work_dir=No
                 mask = i[modalities+2]
             elif use_fake_masks : # create mask from segmentation
                 mask = work_dir + os.sep + 'fake_mask_' + os.path.basename(scan)
-                create_fake_mask(seg, mask, op=op_mask)
+                create_fake_mask(seg, mask, op=op_mask) # TODO: parallelize this
 
             sample=                  MriDataset(scan=scan, seg=seg, mask=mask, protect=True,add=add)
             input_samples.append(    sample )
