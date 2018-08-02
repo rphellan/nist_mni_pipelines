@@ -230,11 +230,18 @@ def gen_sample(library, options, source_parameters, sample, idx=0, flip=False, p
                   with open(ran_xfm,'w') as f:
                     f.write("MNI Transform File\n\nTransform_Type = Grid_Transform;\nInvert_Flag = True;\nDisplacement_Volume = {};\n".\
                       format(os.path.basename(ran_grid)))
-                if flip:
+
+                if os.path.exists(lib_sample[-1]): # in case there was no linear reg
+                  if flip:
                     m.xfmconcat([lib_sample[-1], m.tmp('flip_x.xfm'), ran_xfm], out_xfm)
-                else:
+                  else:
                     m.xfmconcat([lib_sample[-1], ran_xfm], out_xfm)
-                                
+                else:
+                  if flip:
+                    m.xfmconcat([ m.tmp('flip_x.xfm'), ran_xfm], out_xfm)
+                  else:
+                    m.xfmconcat([  ran_xfm], out_xfm)
+              
                 if mask is not None:
                     m.resample_labels(mask, out_mask,
                                     transform=out_xfm, like=model, invert_transform=True, baa=True, order=options.order)
@@ -332,8 +339,6 @@ if __name__ == '__main__':
         
         
         outputs=[]
-        print(repr(samples))
-        print(repr(pca_grid.lib))
         for i,j in enumerate( samples ):
             # submit jobs to produce augmented dataset
             outputs.append( futures.submit( 
