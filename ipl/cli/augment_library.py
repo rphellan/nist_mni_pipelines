@@ -78,21 +78,21 @@ def parse_options():
     parser.add_argument('output',
                     help="Output directory")
 
-    parser.add_argument('-n',type=int,
+    parser.add_argument('-n', type=int,
                         default=10,
                         help="Aplification factor (i.e number of augmented samples per each input",
                         dest='n')
     
-    parser.add_argument('--shift',type=float,
-                        default=1.0,
+    parser.add_argument('--shift', type=float,
+                        default=None,
                         help="Shift magnitude (mm)")
-    
-    parser.add_argument('--rot',type=float,
-                        default=4.0,
+
+    parser.add_argument('--rot', type=float,
+                        default=None,
                         help="rotation magnitude (degree)")
     
-    parser.add_argument('--scale',type=float,
-                        default=2.0,
+    parser.add_argument('--scale', type=float,
+                        default=None,
                         help="Scale magnitude (percent)")
     
     parser.add_argument('--order',type=int,
@@ -108,18 +108,23 @@ def parse_options():
                         default=False,
                         help="Debug")
     
+    parser.add_argument('--gridpca',
+                    help="Apply nonlinar tranformation variance using PCA library of log fields")
+
+    parser.add_argument('--grid_var',type=float,
+                        default=0.1,
+                        help="grid_pca variance")
+
     parser.add_argument('--intpca',
                     help="Apply intensity variance using PCA library of log fields")
                     
-    parser.add_argument('--gridpca',
-                    help="Apply nonlinar tranformation variance using PCA library of log fields")
-    
+
     parser.add_argument('--intvar',
-                    default=0.1,type=float,
+                    default=0.1, type=float,
                     help="Intensity variance (log space)")
     
     parser.add_argument('--int_n',
-                    default=3,type=int,
+                    default=3, type=int,
                     help="Number of Intensity PCA components (log space)")
                     
     parser.add_argument('--grid_n',
@@ -163,16 +168,13 @@ def gen_sample(library, options, source_parameters, sample, idx=0, flip=False, p
         
         # inverse lut
         lut=[ [ _i[1], _i[0] ] for _i in lut.items() ]
-        
-        
+
         model      = library['local_model']
         model_mask = library['local_model_mask']
         model_seg  = library.get('local_model_seg',None)
-        
-        
         mask = None
         
-        sample_name=os.path.basename(sample[0]).rsplit('.mnc',1)[0]
+        sample_name = os.path.basename(sample[0]).rsplit('.mnc',1)[0]
         
         if flip:
             sample_name+='_f'
@@ -194,54 +196,60 @@ def gen_sample(library, options, source_parameters, sample, idx=0, flip=False, p
         
         m.param2xfm(m.tmp('flip_x.xfm'), scales=[-1.0, 1.0, 1.0])
         
-        out_=[]
+        out_= []
         for r in range(options.n):
-            out_suffix="_{:03d}".format(r)
+            out_suffix = "_{:03d}".format(r)
             
-            out_vol  = options.output+ os.sep+ sample_name+ out_suffix+ '_scan.mnc'
-            out_seg  = options.output+ os.sep+ sample_name+ out_suffix+ '_seg.mnc'
-            out_mask = options.output+ os.sep+ sample_name+ out_suffix+ '_mask.mnc'
-            out_xfm  = options.output+ os.sep+ sample_name+ out_suffix+ '.xfm'
+            out_vol  = options.output + os.sep + sample_name + out_suffix + '_scan.mnc'
+            out_seg  = options.output + os.sep + sample_name + out_suffix + '_seg.mnc'
+            out_mask = options.output + os.sep + sample_name + out_suffix + '_mask.mnc'
+            out_xfm  = options.output + os.sep + sample_name + out_suffix + '.xfm'
             
             if not os.path.exists(out_vol) or not os.path.exists(out_seg) or not os.path.exists(out_mask) or not os.path.exists(out_xfm):
                 
                 # apply random linear xfm
-                ran_xfm=m.tmp('random_{}.xfm'.format(r))
+                ran_lin_xfm = m.tmp('random_lin_{}.xfm'.format(r))
+                ran_nl_xfm = m.tmp('random_nl_{}.xfm'.format(r))
                 
-                if pca_grid is None:
-                      m.param2xfm(ran_xfm,
+                if options.scale is not None and options.shift is not None and options.rot is not None:
+                      m.param2xfm(ran_lin_xfm,
                               scales=     ((np.random.rand(3)-0.5)*2*float(options.scale)/100.0+1.0).tolist(),
                               translation=((np.random.rand(3)-0.5)*2*float(options.shift)).tolist(),
                               rotations=  ((np.random.rand(3)-0.5)*2*float(options.rot))  .tolist())
                 else:
+                    m.param2xfm(ran_lin_xfm) # IDENTITY
+
+                if pca_grid is not None:
                     # create a random transform
-                    ran_grid=ran_xfm.rsplit('.xfm',1)[0]+'_grid_0.mnc'
+                    ran_grid=ran_nl_xfm.rsplit('.xfm',1)[0]+'_grid_0.mnc'
 
                     _files=[]
                     cmd=[]
-                    _par=((np.random.rand(options.grid_n)-0.5)*2.0*float(options.shift)).tolist()
+                    _par=((np.random.rand(options.grid_n)-0.5)*2.0*float(options.grid_var)).tolist()
                     # resample fields first
                     for i in range(options.grid_n):
                         _files.append(pca_grid[i])
                         cmd.append('A[{}]*{}'.format(i,_par[i]))
                     cmd='+'.join(cmd)
                     # apply to the output
-                    m.calc(_files,cmd,ran_grid)
+                    m.calc(_files, cmd, ran_grid)
 
-                    with open(ran_xfm,'w') as f:
+                    with open(ran_nl_xfm,'w') as f:
                         f.write("MNI Transform File\n\nTransform_Type = Grid_Transform;\nInvert_Flag = True;\nDisplacement_Volume = {};\n".\
                                 format(os.path.basename(ran_grid)))
+                else:
+                    m.param2xfm(ran_nl_xfm)  # IDENTITY
 
                 if os.path.exists(lib_sample[-1]): # in case there was no linear reg
                     if flip:
-                        m.xfmconcat([lib_sample[-1], m.tmp('flip_x.xfm'), ran_xfm], out_xfm)
+                        m.xfmconcat([lib_sample[-1], m.tmp('flip_x.xfm'), ran_nl_xfm, ran_lin_xfm], out_xfm)
                     else:
-                        m.xfmconcat([lib_sample[-1], ran_xfm], out_xfm)
+                        m.xfmconcat([lib_sample[-1], ran_nl_xfm, ran_lin_xfm], out_xfm)
                 else:
                     if flip:
-                        m.xfmconcat([m.tmp('flip_x.xfm'), ran_xfm], out_xfm)
+                        m.xfmconcat([m.tmp('flip_x.xfm'), ran_nl_xfm, ran_lin_xfm], out_xfm)
                     else:
-                        m.xfmconcat([ran_xfm], out_xfm)
+                        m.xfmconcat([ran_nl_xfm, ran_lin_xfm], out_xfm)
 
                 if mask is not None:
                     m.resample_labels(mask, out_mask, 
@@ -336,7 +344,7 @@ def main():
             pca_int=pca_lib(options.intpca)
             
         if options.gridpca is not None:
-            pca_grid=pca_lib(options.gridpca)
+            pca_grid = pca_lib(options.gridpca)
         
         
         outputs=[]

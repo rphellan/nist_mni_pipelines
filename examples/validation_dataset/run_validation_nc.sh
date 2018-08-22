@@ -32,7 +32,7 @@ fi
 pipeline_dir=$(dirname $0)/../..
 data_dir=$(dirname $0)
 
-export PYTHONPATH=$pipeline_dir
+#export PYTHONPATH=$pipeline_dir
 export OMP_NUM_THREADS=1
 export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1
 
