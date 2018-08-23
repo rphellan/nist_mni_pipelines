@@ -67,7 +67,7 @@ class pca_lib:
 
 def parse_options():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                 description='Create augmented dataset for training deep nets')
+                                     description='Create augmented dataset for training deep nets')
     
     parser.add_argument('source',
                     help="Library source")

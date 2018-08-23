@@ -6,4 +6,4 @@
 from ipl.cli.ScoopGenerateModel import main
 
 if __name__ == '__main__':
-    exit(main())
+    main()

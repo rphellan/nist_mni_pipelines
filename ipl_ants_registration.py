@@ -6,4 +6,4 @@
 from ipl.cli.ants_registration import main
 
 if __name__ == '__main__':
-    exit(main())
+    main()
