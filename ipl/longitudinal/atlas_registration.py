@@ -11,7 +11,9 @@ version = '1.0'
 # Atlas registration
 #
 from ipl.minc_tools import mincTools,mincError
-
+from ipl.registration import non_linear_register_full
+from ipl.ants_registration import  non_linear_register_ants2
+from ipl.elastix_registration import  register_elastix
 from .general import *
 
 
@@ -38,14 +40,32 @@ def atlasregistration_v10(patient):
         model_t1   = patient.modeldir + os.sep + patient.modelname + '.mnc'
         model_mask = patient.modeldir + os.sep + patient.modelname + '_mask.mnc'
 
-        minc.non_linear_register_full(
-            patient.template['nl_template'],
-            model_t1,
-            patient.nl_xfm,
-            source_mask=patient.template['nl_template_mask'],
-            target_mask=model_mask,
-            level=nl_level,
-            )
+        if patient.nlreg=='ants':
+            non_linear_register_ants2(
+                patient.template['nl_template'],
+                model_t1,
+                patient.nl_xfm,
+                source_mask=patient.template['nl_template_mask'],
+                target_mask=model_mask,
+                level=nl_level
+                )
+        elif patient.nlreg=='elastix':
+            register_elastix(
+                patient.template['nl_template'],
+                model_t1,
+                output_xfm=patient.nl_xfm,
+                source_mask=patient.template['nl_template_mask'],
+                target_mask=model_mask
+                )
+        else:
+            non_linear_register_full(
+                patient.template['nl_template'],
+                model_t1,
+                patient.nl_xfm,
+                source_mask=patient.template['nl_template_mask'],
+                target_mask=model_mask,
+                level=nl_level,
+                )
         
         # make QC image, similar to linear ones
         if not os.path.exists(patient.qc_jpg['nl_template_nl']):
@@ -60,16 +80,5 @@ def atlasregistration_v10(patient):
                 clamp=True,
                 mask=atlas_outline
                 )
-        
-
-
-if __name__ == '__main__':
-    pass
-
-  # Using script as a stand-alone script
-
-  # set options - the options should keep same names than in pipeline
-
-  # use -->  runProcessing
 
 # kate: space-indent on; indent-width 4; indent-mode python;replace-tabs on;word-wrap-column 80;show-tabs on

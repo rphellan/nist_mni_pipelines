@@ -93,7 +93,4 @@ def lobe_segmentation_v10(patient, tp):
                    [patient[tp].vol['lobes']])
     return 0
 
-if __name__ == '__main__':
-    pass
-
 # kate: space-indent on; indent-width 4; indent-mode python;replace-tabs on;word-wrap-column 80;show-tabs on

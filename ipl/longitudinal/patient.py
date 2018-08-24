@@ -106,6 +106,7 @@ class LngPatient(dict):
         self.rigid     = False # run rigid body linear model creation
         self.symmetric = False # run symmetric linear model creation
         self.linreg    = None
+        self.nlreg     = None
 
     def clean(self):
         cleanImages(self.template)
@@ -181,6 +182,7 @@ class LngPatient(dict):
         print('        - run Skull registration     = ' + str(self.skullreg))
         print('        - Geo Corr     = ' + str(self.geo_corr))
         print('        - linreg       = ' + str(self.linreg))
+        print('        - nlreg        = ' + str(self.nlreg))
         print('')
         print('    - Patient Info ' + self.id)
         print('        - sex = ' + self.sex)

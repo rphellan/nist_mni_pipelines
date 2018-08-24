@@ -246,8 +246,8 @@ def non_linear_register_ants2(
     init_xfm   =None,
     parameters =None,
     downsample =None,
-    start      =None,
-    level      =32.0,
+    start      =32.0,
+    level      =2.0,
     verbose    =0
     ):
     """perform non-linear registration using ANTs, WARNING: will create inverted xfm  will be named output_invert.xfm"""
@@ -524,9 +524,5 @@ def linear_register_ants2(
         
         outputs=[output_xfm ] # TODO: add inverse xfm ?
         minc.command(cmd, inputs=inputs, outputs=outputs,verbose=verbose)
-
-
-if __name__ == "__main__":
-    pass
 
 # kate: space-indent on; indent-width 4; indent-mode python;replace-tabs on;word-wrap-column 80

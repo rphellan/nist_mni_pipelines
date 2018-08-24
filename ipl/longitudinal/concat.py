@@ -69,13 +69,5 @@ def concat_v10(patient, tp):
             big=True,
             clamp=True,
             )
-        
-        
-        
-
-
-if __name__ == '__main__':
-    # Concat not very useful in stand-alone i guess
-    pass
 
 # kate: space-indent on; indent-width 4; indent-mode python;replace-tabs on;word-wrap-column 80;show-tabs on

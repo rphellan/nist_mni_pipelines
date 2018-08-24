@@ -78,7 +78,8 @@ def pipeline_run_add(patient):
                 if os.path.exists(output_prefix+'_seg.mnc'):
                     print('ADD:{} already done!'.format(output_name))
                 else:
-                    ipl.segment.fusion_segment(patient.template['nl_template'], 
+                    ipl.segment.fusion_segment(
+                                patient.template['nl_template'],
                                 library,
                                 output_prefix,
                                 input_mask=patient.template['nl_template_mask'],
@@ -92,15 +93,15 @@ def pipeline_run_add(patient):
 # this part runs timepoint-specific part
 def pipeline_run_add_tp(patient, tp):
     
-    for i,j in enumerate( patient.add ):
-        output_name=j.get('name','seg_{}'.format(i))
+    for i, j in enumerate( patient.add ):
+        output_name = j.get('name','seg_{}'.format(i))
         print("ADD TP:{}".format(output_name))
         
-        library=None
+        library = None
         if 'segment_library' in j:
             library=ipl.segment.load_library_info( j['segment_library'] )
             
-        options=j.get('segment_options',{})
+        options = j.get('segment_options',{})
         
         if isinstance(options, six.string_types):
             with open(options,'r') as f:
@@ -234,10 +235,5 @@ def pipeline_run_add_tp(patient, tp):
             output_grad_vol=output_prefix+'_grad.json'
             patient[tp].add[output_name]={'grad':output_grad,'vol':output_grad_vol}
 
-if __name__ == '__main__':
-    pass
-
-  # Using script as a stand-alone script
-  # do nothing
 
 # kate: space-indent on; indent-width 4; indent-mode python;replace-tabs on;word-wrap-column 80;show-tabs on

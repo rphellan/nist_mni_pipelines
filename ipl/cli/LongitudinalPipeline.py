@@ -60,7 +60,7 @@ version = '1.0'
 if os.path.exists('lng_environment.json'):
     env={}
     with open('lng_environment.json','r') as f:
-        env=json.load(f)
+        env = json.load(f)
     for i in env.iterkeys():
         os.environ[i]=env[i]
 
@@ -136,7 +136,10 @@ def launchPipeline(options):
         
         if 'linreg' in _opts:
             options.linreg = _opts['linreg']
-            
+
+        if 'nlreg' in _opts:
+            options.nlreg = _opts['nlreg']
+
         if 'add' in _opts:
             options.add = _opts['add']
 
@@ -265,6 +268,7 @@ def launchPipeline(options):
                 patients[id].large_atrophy = options.large_atrophy
                 patients[id].dobiascorr = options.dobiascorr
                 patients[id].linreg   = options.linreg
+                patients[id].nlreg    = options.nlreg
                 patients[id].rigid    = options.rigid
                 patients[id].add      = options.add
                 
@@ -813,7 +817,6 @@ def parse_options():
         help='VBM nl level'
         )
     
-
     # group.add_argument("-b", "--beast-res", dest="beastres", help="Beast resolution (def: 1mm)",default="1")
 
     group.add_argument(
@@ -856,7 +859,7 @@ def parse_options():
 
     group.add_argument('--model-dir', dest='modeldir',
                      help='Directory with the model ',
-                     default='/ipl/quarantine/models/icbm152_model_09c/'
+                     default='/opt/minc/share/icbm152_model_09c'
                      )
     
     group.add_argument('--model-name', dest='modelname',
@@ -865,7 +868,7 @@ def parse_options():
     
     group.add_argument('--beast-dir', dest='beastdir',
                      help='Directory with the beast library ', 
-                     default='/ipl/quarantine/models/beast')
+                     default='/opt/minc/share/beast')
 
     #group.add_argument( '--sym', dest='sym',
                      #help='Use symmetric minctracc (NOT YET)')
@@ -891,14 +894,20 @@ def parse_options():
         )
 
     group.add_argument('--manual', dest='manual',
-                     help='Manual or alternative processing path to find auxiliary data (look info)'
-                     )
+                       help='Manual or alternative processing path to find auxiliary data (look info)'
+                      )
 
     group.add_argument(
         '--linreg',
         dest='linreg',
         help='Linear registration method',
         default='bestlinreg_20180117',
+        )
+
+    group.add_argument(
+        '--nlreg',
+        dest='nlreg',
+        help='Nonlinear registration method (std, ants, elastix)'
         )
 
     group.add_argument(
@@ -990,7 +999,7 @@ def main():
             sys.exit(1)
         launchPipeline(opts)
     elif opts.pickle is not None:
-        runPipeline(opts.pickle,workdir=opts.workdir)
+        runPipeline(opts.pickle, workdir=opts.workdir)
     else:
         print("missing something...")
         sys.exit(1)

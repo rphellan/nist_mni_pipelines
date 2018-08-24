@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # @author Vladimir S. FONOV
@@ -2175,7 +2174,4 @@ class mincTools(temp_files):
         
         return (sources_lr, targets_lr, source_mask_lr, target_mask_lr)
         
-if __name__ == '__main__':
-    pass
-
 # kate: space-indent on; indent-width 4; indent-mode python;replace-tabs on;word-wrap-column 80

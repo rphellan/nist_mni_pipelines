@@ -561,6 +561,3 @@ def register_elastix(
                     shutil.copyfile(it_output_dir+os.sep+'elastix.log',output_log)
 
         return outcome
-
-if __name__ == "__main__":
-    pass

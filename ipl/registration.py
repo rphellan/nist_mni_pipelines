@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # @author Vladimir S. FONOV
@@ -827,8 +826,4 @@ def non_linear_register_increment(
           downsample=downsample)
 
 
-
-
-if __name__ == "__main__":
-    pass            
 # kate: space-indent on; indent-width 4; indent-mode python;replace-tabs on;word-wrap-column 80
