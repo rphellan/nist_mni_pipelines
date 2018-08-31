@@ -309,16 +309,5 @@ def linearlngtemplate_v11(patient):
         shutil.rmtree(work_prefix)
         
         
-if __name__ == '__main__':
-    pass
-
-    # Using script as a stand-alone script
-    # We can create this as a stand alone script
-
-    # 1. Create a patient
-    # 2. Fill necessary images from the options (inputs and outputs)
-    # 3. Call the function -> preprocessing_v10
-    # 4. Exit
-
 # kate: space-indent on; indent-width 4; indent-mode python;replace-tabs on;word-wrap-column 80;show-tabs on
 

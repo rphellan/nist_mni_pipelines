@@ -3,7 +3,7 @@
 #
 # @author Vladimir S. FONOV
 # @date 22/08/2018
-from ipl.cli.std_registration import main
+from ipl.cli.minc_qc import main
 
 if __name__ == '__main__':
     main()

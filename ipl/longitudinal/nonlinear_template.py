@@ -58,16 +58,17 @@ def lngtemplate_v11(patient):
         atlas_mask = patient.modeldir + os.sep + patient.modelname \
             + '_mask.mnc'
 
-        options={'symmetric':False,
-                 'protocol':[{'iter':1,'level':16},
-                             {'iter':2,'level':8},
-                             {'iter':2,'level':4},
-                             {'iter':2,'level':2}],
-                 'cleanup':True,
-                 'biascorr':biascorr }
+        options={'symmetric': False,
+                 'protocol': [{'iter': 1, 'level': 16},
+                              {'iter': 2, 'level': 8},
+                              {'iter': 2, 'level': 4},
+                              {'iter': 2, 'level': 2}],
+                 'cleanup': True,
+                 'biascorr': biascorr}
 
         if patient.fast:  # apply fast mode
-            options['protocol']=[{'iter':1,'level':16},{'iter':2,'level':8}]
+            options['protocol'] = [{'iter': 1, 'level': 16},
+                                   {'iter': 2, 'level': 8} ]
 
         samples= [ [tp.stx2_mnc['t1'], tp.stx2_mnc['masknoles']]
                         for (i, tp) in patient.items()]
@@ -80,9 +81,9 @@ def lngtemplate_v11(patient):
         output=generate_nonlinear_model(samples,model=atlas,mask=atlas_mask,work_prefix=work_prefix,options=options)
 
         # copy output ... 
-        shutil.copyfile(output['model'].scan,   patient.template['nl_template'])
-        shutil.copyfile(output['model'].mask,   patient.template['nl_template_mask'])
-        shutil.copyfile(output['model_sd'].scan,patient.template['nl_template_sd'])
+        shutil.copyfile(output['model'].scan,    patient.template['nl_template'])
+        shutil.copyfile(output['model'].mask,    patient.template['nl_template_mask'])
+        shutil.copyfile(output['model_sd'].scan, patient.template['nl_template_sd'])
 
         #TODO:
         #options.output_regu_0 = patient.template['regu_0']

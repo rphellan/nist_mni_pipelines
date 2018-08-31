@@ -106,6 +106,7 @@ class LngPatient(dict):
         self.rigid     = False # run rigid body linear model creation
         self.symmetric = False # run symmetric linear model creation
         self.linreg    = None
+        self.nlreg     = None
 
     def clean(self):
         cleanImages(self.template)
@@ -181,6 +182,7 @@ class LngPatient(dict):
         print('        - run Skull registration     = ' + str(self.skullreg))
         print('        - Geo Corr     = ' + str(self.geo_corr))
         print('        - linreg       = ' + str(self.linreg))
+        print('        - nlreg        = ' + str(self.nlreg))
         print('')
         print('    - Patient Info ' + self.id)
         print('        - sex = ' + self.sex)
@@ -628,7 +630,8 @@ def setFilenames(patient):
     # directories
 
     lngtmpldir = patient.patientdir + 'lng_template' + os.sep
-    os.makedirs(lngtmpldir)
+
+    os.makedirs(lngtmpldir,exist_ok=True)
 
     # ## template images
     # a) linear
@@ -664,7 +667,7 @@ def setFilenames(patient):
     patient.lock = patient.patientdir + os.sep + patient.id + '.sge.lock'
 
     if len(patient) == 1:
-        tp = patient.keys()[0]  # taking the only timepoint
+        tp = list(patient)[0]  # taking the only timepoint
 
         # a) linear
         # patient.template["linear_template"] = patient[tp].stx_mnc["t1"]

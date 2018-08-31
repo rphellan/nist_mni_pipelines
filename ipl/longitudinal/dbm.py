@@ -59,13 +59,4 @@ def pipeline_lngDBM_v10(patient, tp):
             print(' -- pipeline_lngDBM is done!')
 
 
-if __name__ == '__main__':
-    pass
-
-  # Using script as a stand-alone script
-
-  # set options - the options should keep same names than in pipeline
-
-  # use -->  runProcessing
-
 # kate: space-indent on; indent-width 4; indent-mode python;replace-tabs on;word-wrap-column 80;show-tabs on

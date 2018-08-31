@@ -515,7 +515,5 @@ def t2pdpreprocessing_v10(patient, tp):
                                  like=patient[tp].stx_mnc['masknoles'],
                                  transform=combinedxfm)
 
-if __name__ == '__main__':
-    pass
 
 # kate: space-indent on; indent-width 4; indent-mode python;replace-tabs on;word-wrap-column 80;show-tabs on

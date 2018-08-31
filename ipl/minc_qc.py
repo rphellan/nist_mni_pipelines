@@ -171,9 +171,15 @@ def qc(
         vmin=np.nanmin(_idata)
         vmax=np.nanmax(_idata)
 
-    cm = plt.get_cmap(image_cmap)
-    cmo= plt.get_cmap(mask_cmap)
-    cmo.set_bad('k',alpha=0.0)
+    # HACK! TODO: register "spectral" cmap
+    if mask_cmap=='spectral':
+        mask_cmap='plasma'
+    if image_cmap=='spectral':
+        mask_cmap='plasma'
+
+    cm  = plt.get_cmap(image_cmap)
+    cmo = plt.get_cmap(mask_cmap)
+    cmo.set_bad('k', alpha=0.0)
 
     cNorm  = colors.Normalize(vmin=vmin, vmax=vmax)
     oNorm  = colors.Normalize(vmin=omin, vmax=omax)
@@ -269,18 +275,18 @@ def qc_field_contour(
     _idims=_img.representation_dims()
     
     data_shape=_idata.shape
-    spacing=[_idims[0].step,_idims[1].step,_idims[2].step]
+    spacing = [_idims[0].step,_idims[1].step,_idims[2].step]
     
-    slices=[]
+    slices = []
     
     # setup ranges
     vmin=vmax=0.0
     if image_range is not None:
-        vmin=image_range[0]
-        vmax=image_range[1]
+        vmin = image_range[0]
+        vmax = image_range[1]
     else:
-        vmin=np.nanmin(_idata)
-        vmax=np.nanmax(_idata)
+        vmin = np.nanmin(_idata)
+        vmax = np.nanmax(_idata)
 
     cm = plt.get_cmap(image_cmap)
 
@@ -375,6 +381,4 @@ plt.register_cmap(cmap=colors.LinearSegmentedColormap('blue',
     }))
 
 
-if __name__ == '__main__':
-    pass
 # kate: space-indent on; indent-width 4; indent-mode python;replace-tabs on;word-wrap-column 80
