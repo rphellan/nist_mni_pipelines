@@ -143,8 +143,8 @@ def gen_sample(library, options, source_parameters, sample, idx=0, flip=False, p
   try:
     with mincTools() as m:
         
-        pre_filters  =        source_parameters.get('pre_filters', None )
-        post_filters =        source_parameters.get('post_filters', source_parameters.get( 'filters', None ))
+        pre_filters  =        source_parameters.get( 'pre_filters', None )
+        post_filters =        source_parameters.get( 'post_filters', source_parameters.get( 'filters', None ))
         
         build_symmetric     = source_parameters.get( 'build_symmetric',False)
         build_symmetric_flip= source_parameters.get( 'build_symmetric_flip',False)
