@@ -172,10 +172,10 @@ def qc(
         vmax=np.nanmax(_idata)
 
     # HACK! TODO: register "spectral" cmap
-    if mask_cmap=='spectral':
-        mask_cmap='plasma'
-    if image_cmap=='spectral':
-        mask_cmap='plasma'
+    if mask_cmap == 'spectral':
+        mask_cmap = 'plasma'
+    if image_cmap == 'spectral':
+        mask_cmap = 'plasma'
 
     cm  = plt.get_cmap(image_cmap)
     cmo = plt.get_cmap(mask_cmap)
