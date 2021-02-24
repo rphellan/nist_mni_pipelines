@@ -5,6 +5,8 @@ import csv
 import copy
 import json
 import random
+import yaml
+
 
 # MINC stuff
 from ipl.minc_tools import mincTools,mincError
@@ -96,7 +98,7 @@ def run_segmentation_experiment( input_scan,
                 json.dump(segmentation_parameters,f,indent=1)
         
         (output_file, output_info) = fusion_segment(
-                    input_scan, 
+                    input_scan,
                     segmentation_library,
                     output_experiment,
                     input_mask=mask,
@@ -110,7 +112,7 @@ def run_segmentation_experiment( input_scan,
                     cleanup=cleanup,
                     presegment=presegment)
         
-        stats = calc_similarity_stats( input_seg, output_file, 
+        stats = calc_similarity_stats( input_seg, output_file,
                                        output_stats = output_experiment+'_stats.csv',
                                        use_labels   = output_info['used_labels'],
                                        relabel      = relabel )
@@ -152,10 +154,10 @@ def run_segmentation_experiment( input_scan,
             output_info['presegment']=presegment
 
         with open(output_experiment+'_out.json','w') as f:
-            json.dump(output_info,f,indent=1, cls=MRIEncoder)
+            json.dump(output_info,f,indent=1, cls=LIBEncoder)
             
         with open(output_experiment+'_stats.json','w') as f:
-            json.dump(stats,f,indent=1, cls=MRIEncoder)
+            json.dump(stats,f,indent=1, cls=LIBEncoder)
 
         return (stats, output_info)
 
@@ -488,10 +490,10 @@ def cv_fusion_segment( cv_parameters,
         max_error_maps(all_error_maps,output_results_all['max_error'])
         
         with open(cv_output, 'w') as f:
-            json.dump(stat_results, f, indent=1 )
+            json.dump(stat_results, f, indent=1, cls=LIBEncoder )
 
         with open(res_output, 'w') as f:
-            json.dump(output_results_all, f, indent=1, cls=MRIEncoder)
+            json.dump(output_results_all, f, indent=1, cls=LIBEncoder)
 
         return stat_results
     else:

@@ -505,11 +505,11 @@ def fusion_segment( input_scan,
             bbox_sample.mask = local_model.mask
             bbox_sample.mask_f = local_model.mask
             
-        output_info['nonlinear_xfm']=nonlinear_xfm
+        output_info['nonlinear_xfm'] = nonlinear_xfm
 
         if generate_library:
             # remove excluded samples TODO: use regular expressions for matching?
-            selected_library = [i for i in library if i[0] not in exclude]
+            selected_library = [ i for i in library if i[0] not in exclude]
             selected_library_f = []
             
             if segment_symmetric: # fill up with all entries
@@ -521,16 +521,18 @@ def fusion_segment( input_scan,
                 loaded = False
                 loaded_f = False
                 
-                if os.path.exists(work_lib_dir+os.sep+'sel_library.yaml'):
-                    with open(work_lib_dir+os.sep+'sel_library.yaml','r') as f:
-                        selected_library = yaml.load(f)
-                        # TODO: fix prefixes of the seg entries
+                if os.path.exists(work_lib_dir + os.sep + 'sel_library.yaml'):
+                    with open(work_lib_dir + os.sep + 'sel_library.yaml', 'r') as f:
+                        selected_library = yaml.safe_load(f)
+                    for i in selected_library:
+                        i.prefix = work_lib_dir
                     loaded = True
 
-                if segment_symmetric and os.path.exists(work_lib_dir_f+os.sep+'sel_library.yaml'):
-                    with open(work_lib_dir_f+os.sep+'sel_library.yaml','r') as f:
-                        selected_library_f = yaml.load(f)
-                        # TODO: fix prefixes of the seg entries
+                if segment_symmetric and os.path.exists(work_lib_dir_f + os.sep + 'sel_library_f.yaml'):
+                    with open(work_lib_dir + os.sep + 'sel_library_f.yaml', 'r') as f:
+                        selected_library_f= yaml.safe_load(f)
+                    for i in selected_library_f:
+                        i.prefix = work_lib_dir_f
                     loaded_f = True
                 
                 if do_nonlinear_register:
@@ -572,17 +574,16 @@ def fusion_segment( input_scan,
                                                     lib_add_n=library_modalities)
 
                 if not loaded:
-                    with open(work_lib_dir+os.sep+'sel_library.yaml','w') as f:
-                        f.write(yaml.dump(selected_library))
+                    with open(work_lib_dir + os.sep + 'sel_library.yaml', 'w') as f:
+                        f.write( yaml.dump( selected_library ) )
 
-                if not loaded_f:
-                    if segment_symmetric:
-                        with open(work_lib_dir_f+os.sep+'sel_library.yaml','w') as f:
-                            f.write(yaml.dump(selected_library_f))
+                if not loaded_f and segment_symmetric:
+                    with open(work_lib_dir + os.sep + 'sel_library_f.yaml', 'w') as f:
+                        f.write( yaml.dump( selected_library_f ) )
                             
-                output_info['selected_library']=selected_library
+                output_info['selected_library'] = selected_library
                 if segment_symmetric:
-                    output_info['selected_library_f']=selected_library_f
+                    output_info['selected_library_f'] = selected_library_f
             
             selected_library_scan=[]
             selected_library_xfm=[]
@@ -913,6 +914,5 @@ def fusion_segment( input_scan,
         print("Exception in fusion_segment:{}".format(sys.exc_info()[0]))
         traceback.print_exc(file=sys.stdout)
         raise
-    
 
 # kate: space-indent on; indent-width 4; indent-mode python;replace-tabs on;word-wrap-column 80;show-tabs on

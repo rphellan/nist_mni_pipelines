@@ -374,8 +374,8 @@ def generate_library(parameters, output, debug=False, cleanup=False, work_dir=No
                     init_xfm=lin_xfm[j]
                 
                 if local_reg_type=='elx' or local_reg_type=='elastix' :
-                    results.append( futures.submit( 
-                        elastix_registration, i, local_model, bbox_lin_xfm[j], 
+                    results.append( futures.submit(
+                        elastix_registration, i, local_model, bbox_lin_xfm[j],
                         init_xfm=init_xfm,
                         symmetric=build_symmetric,
                         parameters=local_reg_opts,
@@ -384,8 +384,8 @@ def generate_library(parameters, output, debug=False, cleanup=False, work_dir=No
                         use_mask=local_reg_use_mask
                         ) )
                 elif local_reg_type=='ants' or local_reg_ants:
-                    results.append( futures.submit( 
-                        linear_registration, i, local_model, bbox_lin_xfm[j], 
+                    results.append( futures.submit(
+                        linear_registration, i, local_model, bbox_lin_xfm[j],
                         init_xfm=init_xfm,
                         symmetric=build_symmetric,
                         reg_type=local_reg_type,
@@ -398,9 +398,8 @@ def generate_library(parameters, output, debug=False, cleanup=False, work_dir=No
                         ) )
                 else:
                     if not do_initial_register:
-                        init_xfm=identity_xfm # to avoid strange initialization errors 
-                        
-                    results.append( futures.submit( 
+                        init_xfm=identity_xfm # to avoid strange initialization errors
+                    results.append( futures.submit(
                         linear_registration, i, local_model, bbox_lin_xfm[j], 
                         init_xfm=init_xfm,
                         symmetric=build_symmetric,
@@ -590,13 +589,14 @@ def generate_library(parameters, output, debug=False, cleanup=False, work_dir=No
         #with mincTools() as m:
             #classes_number=int(m.execute_w_output(['mincstats', '-q', '-max',local_model.seg ]).rstrip("\n"))+1
 
-        library_description = SegLibrary()
+        library_description = SegLibrary(prefix=output)
         # library models
         library_description.model          = model.scan
         library_description.model_mask     = model.mask
         library_description.model_add      = model.add
         
         library_description.local_model      = local_model.scan
+
         library_description.local_model_add  = local_model.add
         library_description.local_model_mask = local_model.mask
         library_description.local_model_seg  = local_model.seg
@@ -610,11 +610,11 @@ def generate_library(parameters, output, debug=False, cleanup=False, work_dir=No
         library_description.classes_number = classes_number
         library_description.nl_samples_avail = do_nonlinear_register
         library_description.modalities = modalities+1
-        
+
         largest_label = max(library_description.map.values(), key=lambda p: int(p))
-        
+
         library_description.seg_datatype = 'short'
-        
+
         if largest_label <= 255:
             library_description.seg_datatype = 'byte'
 
@@ -647,7 +647,7 @@ def generate_library(parameters, output, debug=False, cleanup=False, work_dir=No
             else:
                 ss.extend([bbox_lin_xfm[j].xfm])
 
-            library_description.library.append(LibEntry(lst=ss, ent_id=i.name, relpath=output, prefix=output))
+            library_description.library.append( LibEntry(lst=ss, ent_id=i.name, relpath=output, prefix=output))
 
             if build_symmetric:
                 ss = [i.scan_f, i.seg_f]
@@ -660,9 +660,8 @@ def generate_library(parameters, output, debug=False, cleanup=False, work_dir=No
                 else:
                     ss.extend([bbox_lin_xfm[j].xfm_f])
 
-                library_description.library.append(LibEntry(lst=ss, ent_id=i.name, relpath=output, prefix=output))
+                library_description.library.append( LibEntry(lst=ss, ent_id=i.name, relpath=output, prefix=output))
 
-        #save_library_info( library_description, output)
         library_description.save(output)
         # cleanup
         if cleanup:
