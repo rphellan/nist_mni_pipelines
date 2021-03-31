@@ -399,12 +399,12 @@ def save_scene(images_list, minc_dir, file_path):
     #Replace correspoding image names in the xml scene
 
     xml_modified = default_xml.substitute(
-                        replace_brain_image_path = os.path.relpath(images_list['mr_object_in_tal_space_masked'].scan, minc_dir),
-                        replace_brain_image_name = images_list['mr_object_in_tal_space_masked'].name,
-                        replace_head_image_ct_path = os.path.relpath(images_list['ct_object_in_tal_space'].scan, minc_dir),
-                        replace_head_image_ct_name = images_list['ct_object_in_tal_space'].name,
-                        replace_head_image_mr_path = os.path.relpath(images_list['mr_object_in_tal_space'].scan, minc_dir),
-                        replace_head_image_mr_name = images_list['mr_object_in_tal_space'].name,
+                        replace_brain_image_path = os.path.relpath(images_list['mr_object_in_oriented_space_masked'].scan, minc_dir),
+                        replace_brain_image_name = images_list['mr_object_in_oriented_space_masked'].name,
+                        replace_head_image_ct_path = os.path.relpath(images_list['ct_object_in_oriented_space'].scan, minc_dir),
+                        replace_head_image_ct_name = images_list['ct_object_in_oriented_space'].name,
+                        replace_head_image_mr_path = os.path.relpath(images_list['mr_object_in_oriented_space'].scan, minc_dir),
+                        replace_head_image_mr_name = images_list['mr_object_in_oriented_space'].name,
                         )
 
     file_out = open(file_path, "wt")
