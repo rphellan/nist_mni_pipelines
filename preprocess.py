@@ -477,8 +477,8 @@ def register_rigid_ct_in_mr_space(minc_pre_imp_mr_path, minc_post_imp_ct_path, m
     os.system('cp ' + temp_dir_register_rigid_ct_in_mr_space + '/result.0.mnc ' + minc_post_imp_ct_reg_mr_path)
     os.system('rm -rf ' + temp_dir_register_rigid_ct_in_mr_space)     
 
-def register_mr_and_ct_in_tal_space_no_scale(mr_object_intensity_normalized, ct_object_in_mr_space, mr_model, mr_object_in_tal_space,
-                                            ct_object_in_tal_space):
+def register_mr_and_ct_in_oriented_space_no_scale(mr_object_intensity_normalized, ct_object_in_mr_space, mr_model, mr_object_in_oriented_space,
+                                            ct_object_in_oriented_space):
     """
     Rigidly register ct image in mr space.
 
@@ -492,17 +492,17 @@ def register_mr_and_ct_in_tal_space_no_scale(mr_object_intensity_normalized, ct_
     t1w_tal_par=MriAux(prefix=minc_dir, name=options.subject+'_tal_par_t1w')
     t1w_tal_log=MriAux(prefix=minc_dir, name=options.subject+'_tal_log_t1w_')
     mr_to_tal_transform = MriTransform(prefix=minc_dir, name=options.subject+'_mr_to_tal_transform')
-    mr_to_tal_transform_no_scale = MriTransform(prefix=minc_dir, name=options.subject+'_mr_to_tal_transform_no_scale')
-    mr_to_tal_transform_unscale=MriTransform(prefix=minc_dir, name='mr_to_tal_transform_unscale')
-    mr_to_tal_transform_config = {"noscale":True, "type":"-lsq9", "objective":"-nmi"}   
+    mr_to_oriented_transform_no_scale = MriTransform(prefix=minc_dir, name=options.subject+'_mr_to_oriented_transform_no_scale')
+    mr_to_oriented_transform_unscale=MriTransform(prefix=minc_dir, name='mr_to_oriented_transform_unscale')
+    mr_to_oriented_transform_config = {"noscale":True, "type":"-lsq9", "objective":"-nmi"}   #Check this
  
     lin_registration(mr_object_intensity_normalized, mr_model, mr_to_tal_transform, parameters=mr_to_tal_transform_config,
                      par=t1w_tal_par, log=t1w_tal_log)  
-    xfm_remove_scale(mr_to_tal_transform, mr_to_tal_transform_no_scale, unscale=mr_to_tal_transform_unscale)
-    warp_scan(mr_object_intensity_normalized, mr_model, mr_object_in_tal_space, transform=mr_to_tal_transform_no_scale, 
+    xfm_remove_scale(mr_to_tal_transform, mr_to_oriented_transform_no_scale, unscale=mr_to_oriented_transform_unscale)
+    warp_scan(mr_object_intensity_normalized, mr_model, mr_object_in_oriented_space, transform=mr_to_oriented_transform_no_scale, 
             parameters=mr_to_tal_transform_config)
-    warp_scan(ct_object_in_mr_space, mr_model, ct_object_in_tal_space, transform=mr_to_tal_transform_no_scale, 
-            parameters=mr_to_tal_transform_config)
+    warp_scan(ct_object_in_mr_space, mr_model, ct_object_in_oriented_space, transform=mr_to_oriented_transform_no_scale, 
+            parameters=mr_to_oriented_transform_config)
 
 if __name__ == '__main__':
     options = parse_options()
@@ -525,9 +525,9 @@ if __name__ == '__main__':
     mr_object_field = MriScan(prefix=minc_dir, name=options.subject+'_full_head_image_field_nonuniformity_correction', modality='t1w', mask=None)
     mr_object_nonuniformity_corrected = MriScan(prefix=minc_dir, name=options.subject+'_full_head_image_nonuniformity_corrected', modality='t1w', mask=None)
     mr_object_intensity_normalized=MriScan(prefix=minc_dir, name=options.subject+'_full_head_image_intensity_normalized', modality='t1w', mask=None)
-    mr_object_in_tal_space = MriScan(prefix=minc_dir, name=options.subject+'_full_head_image_tal_space',modality='t1w')
-    mr_object_in_tal_space_masked = MriScan(prefix=minc_dir, name=options.subject+'_brain_image_tal_space',modality='t1w')
-    ct_object_in_tal_space = MriScan(prefix=minc_dir, name=options.subject+'_full_head_image_tal_space',modality='ct')
+    mr_object_in_oriented_space = MriScan(prefix=minc_dir, name=options.subject+'_full_head_image_oriented_space',modality='t1w')
+    mr_object_in_oriented_space_masked = MriScan(prefix=minc_dir, name=options.subject+'_brain_image_oriented_space',modality='t1w')
+    ct_object_in_oriented_space = MriScan(prefix=minc_dir, name=options.subject+'_full_head_image_oriented_space',modality='ct')
     
     #Preprocess ct and mr images
     if not (os.path.exists(minc_dir)):
@@ -546,16 +546,16 @@ if __name__ == '__main__':
     if not os.path.exists(minc_post_imp_ct_reg_mr_path):
         register_rigid_ct_in_mr_space(minc_pre_imp_mr_path, minc_post_imp_ct_path, minc_post_imp_ct_reg_mr_path)
         os.system('cp ' +  minc_post_imp_ct_reg_mr_path + ' ' + ct_object_in_mr_space.scan)
-    if not(os.path.exists(minc_post_imp_ct_reg_mr_path) and os.path.exists(mr_object_in_tal_space.scan)):
-        register_mr_and_ct_in_tal_space_no_scale(mr_object_intensity_normalized, ct_object_in_mr_space, mr_model,
-                                                mr_object_in_tal_space, ct_object_in_tal_space)  
-    if not os.path.exists(mr_object_in_tal_space_masked.scan):
-        extract_brain_beast(mr_object_in_tal_space, parameters=beast_parameters, model=mr_model)
-        mincTools.command(['mincmask','-clobber',mr_object_in_tal_space.scan,mr_object_in_tal_space.mask,mr_object_in_tal_space_masked.scan])
+    if not(os.path.exists(minc_post_imp_ct_reg_mr_path) and os.path.exists(mr_object_in_oriented_space.scan)):
+        register_mr_and_ct_in_oriented_space_no_scale(mr_object_intensity_normalized, ct_object_in_mr_space, mr_model,
+                                                mr_object_in_oriented_space, ct_object_in_oriented_space)  
+    if not os.path.exists(mr_object_in_oriented_space_masked.scan):
+        extract_brain_beast(mr_object_in_oriented_space, parameters=beast_parameters, model=mr_model)
+        mincTools.command(['mincmask','-clobber',mr_object_in_oriented_space.scan,mr_object_in_oriented_space.mask,mr_object_in_oriented_space_masked.scan])
 
     images_list = dict()
-    images_list["mr_object_in_tal_space"] = mr_object_in_tal_space
-    images_list["ct_object_in_tal_space"] = ct_object_in_tal_space
-    images_list["mr_object_in_tal_space_masked"] = mr_object_in_tal_space_masked                     
+    images_list["mr_object_in_oriented_space"] = mr_object_in_oriented_space
+    images_list["ct_object_in_oriented_space"] = ct_object_in_oriented_space
+    images_list["mr_object_in_oriented_space_masked"] = mr_object_in_oriented_space_masked                     
     
     save_scene(images_list, minc_dir, os.path.join(minc_dir, 'scene.xml')) 
