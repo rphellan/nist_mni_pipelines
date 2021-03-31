@@ -494,7 +494,7 @@ def register_mr_and_ct_in_oriented_space_no_scale(mr_object_intensity_normalized
     mr_to_tal_transform = MriTransform(prefix=minc_dir, name=options.subject+'_mr_to_tal_transform')
     mr_to_oriented_transform_no_scale = MriTransform(prefix=minc_dir, name=options.subject+'_mr_to_oriented_transform_no_scale')
     mr_to_oriented_transform_unscale=MriTransform(prefix=minc_dir, name='mr_to_oriented_transform_unscale')
-    mr_to_oriented_transform_config = {"noscale":True, "type":"-lsq9", "objective":"-nmi"}   #Check this
+    mr_to_tal_transform_config = {"noscale":True, "type":"-lsq9", "objective":"-nmi"}   #Check this
  
     lin_registration(mr_object_intensity_normalized, mr_model, mr_to_tal_transform, parameters=mr_to_tal_transform_config,
                      par=t1w_tal_par, log=t1w_tal_log)  
@@ -502,7 +502,7 @@ def register_mr_and_ct_in_oriented_space_no_scale(mr_object_intensity_normalized
     warp_scan(mr_object_intensity_normalized, mr_model, mr_object_in_oriented_space, transform=mr_to_oriented_transform_no_scale, 
             parameters=mr_to_tal_transform_config)
     warp_scan(ct_object_in_mr_space, mr_model, ct_object_in_oriented_space, transform=mr_to_oriented_transform_no_scale, 
-            parameters=mr_to_oriented_transform_config)
+            parameters=mr_to_tal_transform_config)
 
 if __name__ == '__main__':
     options = parse_options()
