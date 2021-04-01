@@ -461,6 +461,28 @@ def convert_files_to_minc(options, minc_dir, minc_pre_imp_mr_name, minc_post_imp
     os.system('dcm2mnc ' + post_imp_ct_files + ' ' + minc_dir + ' -anon' + ' -fname ' +
               minc_post_imp_ct_name + ' -dname' + " ''")
 
+def anonymize_minc_file(minc_file_path):
+    """
+    Anonymize some parameters in the minc header: name, birthdate.
+
+    Arguments: minc_file_path Path of the minc file
+    """
+
+    #Remove name
+    os.system('minc_modify_header ' + '-sinsert patient:full_name="anonymous" ' + minc_file_path)
+    os.system('minc_modify_header ' + '-sinsert dicom_0x0010:el_0x0010="" ' + minc_file_path)
+    
+    #Remove birthdate
+    os.system('minc_modify_header ' + '-sinsert patient:birthdate="" ' + minc_file_path)
+    os.system('minc_modify_header ' + '-sinsert dicom_0x0010:el_0x0030="" ' + minc_file_path)
+
+    #Remove referring physician
+    os.system('minc_modify_header ' + '-sinsert study:referring_physician="" ' + minc_file_path)
+    os.system('minc_modify_header ' + '-sinsert dicom_0x0008:el_0x0090="" ' + minc_file_path)
+
+    #Remove extra copy of data
+    os.system('minc_modify_header ' + '-sinsert dicom_0x0400:el_0x0561="" ' + minc_file_path)
+
 def register_rigid_ct_in_mr_space(minc_pre_imp_mr_path, minc_post_imp_ct_path, minc_post_imp_ct_reg_mr_path):
     """
     Rigidly register ct image in mr space.
@@ -534,6 +556,8 @@ if __name__ == '__main__':
         create_dir(minc_dir)
     if not(os.path.exists(minc_pre_imp_mr_path) and os.path.exists(minc_post_imp_ct_path)):
         convert_files_to_minc(options, minc_dir, minc_pre_imp_mr_name, minc_post_imp_ct_name)
+        anonymize_minc_file(minc_pre_imp_mr_path)
+        anonymize_minc_file(minc_post_imp_ct_path)
         os.system('cp ' +  minc_pre_imp_mr_path + ' ' + mr_object.scan)
     if not os.path.exists(mr_object_denoised.scan):
         denoise(mr_object, mr_object_denoised)
